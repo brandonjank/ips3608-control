@@ -1,0 +1,11 @@
+include LICENSE README.md CHANGELOG.md requirements*.txt *.cmd
+include CONTRIBUTING.md SECURITY.md THIRD_PARTY.md VALIDATION.md
+recursive-include ips3608 *.py *.png *.ico
+recursive-include docs *.md *.png *.jpg
+recursive-include tests *.py
+recursive-include skills *.md *.yaml
+recursive-include tools *.py
+recursive-include assets *.png *.md
+recursive-include packaging *.spec *.txt
+recursive-include .github *.yml *.md
+global-exclude __pycache__ *.pyc *.pyo

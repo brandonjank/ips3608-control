@@ -1,0 +1,43 @@
+name: Draft Windows release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag, for example v0.1.0
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -e ".[dev]"
+      - name: Verify version tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          python -c "import os; from ips3608.branding import VERSION; assert os.environ['RELEASE_TAG'] == 'v' + VERSION"
+      - name: Tests
+        env:
+          IPS3608_CONTROL_HOME: ${{ runner.temp }}/ips3608-test-data
+        run: python -m unittest discover -s tests -v
+      - run: python tools/build_release.py
+      - run: python tools/check_release.py
+      - run: python tools/smoke_bundle.py
+      - name: Create draft prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem dist -File | Where-Object { $_.Name -match '\.(zip|whl|tar\.gz)$|^SHA256SUMS\.txt$' } | ForEach-Object FullName
+          gh release create $env:RELEASE_TAG --verify-tag --draft --prerelease --title "IPS3608 Control $env:RELEASE_TAG" --notes-file docs/release-notes-v0.1.0.md @files

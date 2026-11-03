@@ -1,0 +1,22 @@
+name: Tests
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12', '3.14']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev]"
+      - name: Run tests without hardware
+        env:
+          IPS3608_CONTROL_HOME: ${{ runner.temp }}/ips3608-test-data
+        run: python -m unittest discover -s tests -v
+      - run: python -m build

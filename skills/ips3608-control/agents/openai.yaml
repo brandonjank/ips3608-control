@@ -1,0 +1,14 @@
+interface:
+  display_name: "IPS3608 Control"
+  short_description: "Control and monitor the local bench power supply"
+  brand_color: "#F0B45A"
+  default_prompt: "Use $ips3608-control to read the supply's current status and monitor it without changing output."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ips3608"
+      description: "Local IPS3608, DPS-150 and DPS-150P MCP server"
+
+policy:
+  allow_implicit_invocation: true

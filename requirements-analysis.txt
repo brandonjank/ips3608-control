@@ -1,0 +1,2 @@
+# Optional offline firmware disassembly; not needed to run Bench Control.
+capstone==5.0.9
